@@ -1,24 +1,35 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import "../styles/Dashboard.css";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Dashboard = () => {
   const [users, setUsers] = useState([]);
+
   const fetchUsers = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/fetch');
+      const response = await axios.get("http://localhost:5000/api/fetch");
       console.log(response.data);
-      
-      setUsers(response.data);
+
+      setUsers(response.data.users);
     } catch (error) {
-      console.error('Error fetching users:', error);
+      console.error("Error fetching users:", error);
     }
   };
+
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/users/${id}`); 
+      const response = await axios.patch(
+        `http://localhost:5000/api/users/${id}`
+      );
+      console.log(response.data);
+      if (response.status === 200) {
+        toast.success("User Deleted Successfully");
+      }
       setUsers(users.filter((user) => user._id !== id));
     } catch (error) {
-      console.error('Error deleting user:', error);
+      console.error("Error deleting user:", error);
     }
   };
 
@@ -29,7 +40,7 @@ const Dashboard = () => {
   return (
     <div className="dashboard-container">
       <h2>User Dashboard</h2>
-      <table>
+      <table className="dashboard-table">
         <thead>
           <tr>
             <th>Username</th>
@@ -48,7 +59,12 @@ const Dashboard = () => {
                 <td>{user.password}</td>
                 <td>{user.role}</td>
                 <td>
-                  <button onClick={() => handleDelete(user._id)}>Delete</button>
+                  <button
+                    className="delete-button"
+                    onClick={() => handleDelete(user._id)}
+                  >
+                    Delete
+                  </button>
                 </td>
               </tr>
             ))
@@ -59,6 +75,7 @@ const Dashboard = () => {
           )}
         </tbody>
       </table>
+      <ToastContainer />
     </div>
   );
 };

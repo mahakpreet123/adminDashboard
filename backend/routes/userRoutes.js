@@ -36,12 +36,22 @@ router.post("/login", async (req, res) => {
   }
   return res.status(201).json({ message: "Logged In Successfully" });
 });
-router.get("/fetch",async (req,res)=>{
-  const users = await User.find().lean();
-  if(!users){
+
+router.get("/fetch", async (req, res) => {
+  const users = await User.find({isActive:true}).lean();
+  if (!users) {
     return res.status(404).json({ message: "No user found." });
-  } 
-  return res.status(200).json({users});
-})
+  }
+  return res.status(200).json({ users });
+});
+
+router.patch("/users/:id", async (req, res) => {
+  const { id } = req.params;
+  const user = await User.findByIdAndUpdate(id, { isActive: false });
+  if (!user) {
+    return res.status(404).json({ message: "No User Found" });
+  }
+  return res.status(200).json({ message: "User Deleted Successfully" });
+});
 
 module.exports = router;
