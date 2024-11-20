@@ -1,0 +1,21 @@
+{
+  "name": "project1",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "concurrently \"npm run backend\" \"npm run ui\"",
+    "ui": "cd frontend && npm run dev",
+    "backend": "cd backend && npm run server"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "concurrently": "^9.1.0",
+    "react-toastify": "^10.0.6"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7"
+  }
+}
