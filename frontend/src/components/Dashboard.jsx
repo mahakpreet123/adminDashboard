@@ -6,31 +6,42 @@ import "react-toastify/dist/ReactToastify.css";
 
 const Dashboard = () => {
   const [users, setUsers] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState(null);
 
   const fetchUsers = async () => {
     try {
       const response = await axios.get("http://localhost:5000/api/fetch");
-      console.log(response.data);
-
       setUsers(response.data.users);
     } catch (error) {
       console.error("Error fetching users:", error);
     }
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async () => {
     try {
       const response = await axios.patch(
-        `http://localhost:5000/api/users/${id}`
+        `http://localhost:5000/api/users/${selectedUserId}`
       );
-      console.log(response.data);
       if (response.status === 200) {
         toast.success("User Deleted Successfully");
       }
-      setUsers(users.filter((user) => user._id !== id));
+      setUsers(users.filter((user) => user._id !== selectedUserId));
+      setIsModalOpen(false); // Close the modal
     } catch (error) {
       console.error("Error deleting user:", error);
+      toast.error("Failed to delete user.");
     }
+  };
+
+  const openModal = (id) => {
+    setSelectedUserId(id);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedUserId(null);
   };
 
   useEffect(() => {
@@ -61,7 +72,7 @@ const Dashboard = () => {
                 <td>
                   <button
                     className="delete-button"
-                    onClick={() => handleDelete(user._id)}
+                    onClick={() => openModal(user._id)}
                   >
                     Delete
                   </button>
@@ -75,6 +86,24 @@ const Dashboard = () => {
           )}
         </tbody>
       </table>
+
+      {/* Modal */}
+      {isModalOpen && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3>Confirm Delete</h3>
+            <p>Are you sure you want to delete this user?</p>
+            <div className="modal-actions">
+              <button className="confirm-button" onClick={handleDelete}>
+                Yes, Delete
+              </button>
+              <button className="cancel-button" onClick={closeModal}>
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <ToastContainer />
     </div>
   );
