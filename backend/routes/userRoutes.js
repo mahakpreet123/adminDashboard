@@ -36,5 +36,12 @@ router.post("/login", async (req, res) => {
   }
   return res.status(201).json({ message: "Logged In Successfully" });
 });
+router.get("/fetch",async (req,res)=>{
+  const users = await User.find().lean();
+  if(!users){
+    return res.status(404).json({ message: "No user found." });
+  } 
+  return res.status(200).json({users});
+})
 
 module.exports = router;
